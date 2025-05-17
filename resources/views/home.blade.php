@@ -463,8 +463,10 @@
                 </div>
             </div>
         </section>
+        
 
-        <section id="input" class="mb-16">
+        <section id="input" class="mb-16 scroll-mt-24">
+
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 transition-all">
                 <h2 class="text-xl sm:text-2xl font-bold mb-6 text-center">Enter Your Website URL</h2>
                 <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
