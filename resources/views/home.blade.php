@@ -1,7 +1,7 @@
 <html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiteMapper - Website Analysis Tool</title>
+    <title>SiteMonitor - Website Analysis Tool</title>
     <script src="https://cdn.tailwindcss.com"></script>
      <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -365,7 +365,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[var(--primary)]" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm11 1H6v8l4-2 4 2V6z" clip-rule="evenodd"></path>
                 </svg>
-                <span class="font-bold text-xl bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] inline-block text-transparent bg-clip-text">SiteMapper</span>
+                <span class="font-bold text-xl bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] inline-block text-transparent bg-clip-text">SiteMonitor</span>
             </div>
             
             <!-- Desktop Navigation -->
@@ -441,7 +441,7 @@
                     <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight">Analyze Your Website Structure <span class="bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] inline-block text-transparent bg-clip-text">Effortlessly</span></h1>
                     <p class="text-base sm:text-lg mb-6 opacity-80">Generate site maps, download URLs, and identify 404 errors with our powerful website analysis tool.</p>
                     <div class="flex flex-wrap gap-4">
-                        <button class="btn bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl">Get Started</button>
+                    <a href="{{url('/')}}/#input"><button class="btn bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl">Get Started</button></a>
                         <button class="btn border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-lg font-medium hover:bg-[var(--primary)] hover:bg-opacity-10">Learn More</button>
                     </div>
                 </div>
@@ -464,7 +464,7 @@
             </div>
         </section>
 
-        <section class="mb-16">
+        <section id="input" class="mb-16">
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 transition-all">
                 <h2 class="text-xl sm:text-2xl font-bold mb-6 text-center">Enter Your Website URL</h2>
                 <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
@@ -751,7 +751,7 @@
     <h2 class="text-xl sm:text-2xl font-bold mb-8 text-center">About Us</h2>
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
         <p class="text-gray-600 dark:text-gray-400 text-center">
-            Welcome to SiteMapper, your ultimate tool for analyzing and optimizing your website's structure. Our mission is to provide you with the insights and tools you need to improve your online presence and ensure a seamless user experience.
+            Welcome to SiteMonitor, your ultimate tool for analyzing and optimizing your website's structure. Our mission is to provide you with the insights and tools you need to improve your online presence and ensure a seamless user experience.
         </p>
     </div>
 </section>
@@ -765,7 +765,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[var(--primary)]" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm11 1H6v8l4-2 4 2V6z" clip-rule="evenodd"></path>
                     </svg>
-                    <span class="font-bold text-lg">SiteMapper</span>
+                    <span class="font-bold text-lg">SiteMonitor</span>
                 </div>
                 <div class="flex flex-wrap justify-center gap-4 sm:gap-6">
                     <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-[var(--primary)] transition-colors">About Us</a>
@@ -776,7 +776,7 @@
                 </div>
             </div>
             <div class="mt-6 text-center text-gray-500 dark:text-gray-400 text-sm">
-                © 2023 SiteMapper. All rights reserved.
+                © 2023 SiteMonitor. All rights reserved.
             </div>
             
             <!-- Keyword Stuffing Section -->
