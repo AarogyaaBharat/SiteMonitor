@@ -420,4 +420,96 @@ public function checkUrlsFromExcel(Request $request)
 
     return response()->json($results);
 }
+public function checkUrlsRegx(Request $request)
+{
+    $siteUrl = $request->url;
+    $regex = $request->regex;
+    $depth = (int)$request->depth; // Add depth parameter
+      set_time_limit(7200);
+        ini_set('memory_limit', '512M');
+
+    if (!$this->validateUrl($siteUrl)) {
+        return response()->json(['error' => 'Invalid URL'], 400);
+    }
+
+    if (empty($regex)) {
+        return response()->json(['error' => 'Regex pattern is required'], 400);
+    }
+
+    try {
+        $parsed = parse_url($siteUrl);
+        $this->baseDomain = $parsed['scheme'] . '://' . $parsed['host'];
+        $this->domainName = $parsed['host'];
+
+        // Initialize results array
+        $results = [
+            'total_matches' => 0,
+            'pages_with_matches' => 0,
+            'pages_checked' => 0,
+            'matches' => []
+        ];
+
+        // Start crawling from the given URL
+        $this->crawlForRegex($siteUrl, $regex, $depth, $results);
+
+        return response()->json([
+            'status' => 'success',
+            'results' => $results
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error("Regex check failed for $siteUrl: " . $e->getMessage());
+        return response()->json(['error' => 'Regex check failed: ' . $e->getMessage()], 500);
+    }
+}
+
+private function crawlForRegex($url, $regex, $maxDepth, &$results, $currentDepth = 0)
+{
+    if ($currentDepth > $maxDepth || isset($this->visitedUrls[$url])) {
+        return;
+    }
+
+    $this->visitedUrls[$url] = true;
+    $results['pages_checked']++;
+
+    try {
+        $response = $this->guzzle->get($url);
+        $html = (string)$response->getBody();
+
+        // Check for regex matches
+        if (@preg_match($regex, '') === false) {
+    $regex = '/' . str_replace('/', '\/', $regex) . '/';
+}
+        preg_match_all($regex, $html, $matches, PREG_SET_ORDER);
+
+        if (!empty($matches)) {
+            $results['pages_with_matches']++;
+            $results['total_matches'] += count($matches);
+            
+            $results['matches'][$url] = [
+                'url' => $url,
+                'match_count' => count($matches),
+                'matches' => array_map(function($match) {
+                    return $match[0]; // Return the full match
+                }, $matches)
+            ];
+        }
+
+        // If we have depth remaining, find and crawl links
+        if ($currentDepth < $maxDepth) {
+            $crawler = new DomCrawler($html, $url);
+            $links = $this->extractLinks($crawler);
+            
+            foreach ($links as $link) {
+                $this->crawlForRegex($link, $regex, $maxDepth, $results, $currentDepth + 1);
+            }
+        }
+
+    } catch (\Exception $e) {
+        Log::error("Failed to check $url: " . $e->getMessage());
+        $results['errors'][$url] = $e->getMessage();
+    }
+}
+
+// Reuse your existing extractLinks method from the sitemap generator
 }

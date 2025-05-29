@@ -1,45 +1,375 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://kridasashtra.com</loc>
-    <lastmod>2025-05-14</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://kridasashtra.com/partnership</loc>
-    <lastmod>2025-05-14</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://kridasashtra.com/school</loc>
-    <lastmod>2025-05-14</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://kridasashtra.com/products</loc>
-    <lastmod>2025-05-14</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://kridasashtra.com/contact</loc>
-    <lastmod>2025-05-14</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://kridasashtra.com/static/images/KridaShastra_Brochure.pdf</loc>
-    <lastmod>2025-05-14</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://kridasashtra.com/testing</loc>
-    <lastmod>2025-05-14</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-</urlset>
+Object { captchaResult: "CAPTCHA_NOT_NEEDED", kind: "pagespeedonline#result", id: "https://aarogyaabharat.com/", loadingExperience: {…}, lighthouseResult: {…}, analysisUTCTimestamp: "2025-05-23T04:28:00.292Z" }
+​
+analysisUTCTimestamp: "2025-05-23T04:28:00.292Z"
+​
+captchaResult: "CAPTCHA_NOT_NEEDED"
+​
+id: "https://aarogyaabharat.com/"
+​
+kind: "pagespeedonline#result"
+​
+lighthouseResult: Object { requestedUrl: "https://aarogyaabharat.com/", finalUrl: "https://aarogyaabharat.com/", mainDocumentUrl: "https://aarogyaabharat.com/", … }
+​​
+audits: Object { "uses-optimized-images": {…}, "efficient-animated-content": {…}, "dom-size": {…}, … }
+​​​
+"bootup-time": Object { id: "bootup-time", title: "JavaScript execution time", description: "Consider reducing the time spent parsing, compiling, and executing JS. You may find delivering smaller JS payloads helps with this. [Learn how to reduce Javascript execution time](https://developer.chrome.com/docs/lighthouse/performance/bootup-time/).", … }
+​​​​
+description: "Consider reducing the time spent parsing, compiling, and executing JS. You may find delivering smaller JS payloads helps with this. [Learn how to reduce Javascript execution time](https://developer.chrome.com/docs/lighthouse/performance/bootup-time/)."
+​​​​
+details: Object { summary: {…}, headings: (4) […], type: "table", … }
+​​​​​
+headings: Array(4) [ {…}, {…}, {…}, … ]
+​​​​​
+items: Array(7) [ {…}, {…}, {…}, … ]
+​​​​​​
+0: Object { scriptParseCompile: 0.20600000000000002, url: "https://aarogyaabharat.com/", scripting: 1.4899999999999998, … }
+​​​​​​
+1: Object { url: "Unattributable", total: 449.86399999999736, scripting: 5.05399999999999, … }
+​​​​​​
+2: Object { total: 380.5859999999996, scripting: 213.70099999999962, scriptParseCompile: 5.374999999999998, … }
+​​​​​​
+3: Object { url: "https://www.googletagmanager.com/gtag/js?id=G-D1GEF2BB22", total: 298.59199999999936, scriptParseCompile: 65.05800000000002, … }
+​​​​​​
+4: Object { scripting: 189.93599999999947, total: 241.92399999999947, url: "https://www.googletagmanager.com/gtag/js?id=G-TEY1CCE82S&cx=c&gtm=45He55m0h2v9219462864za200&tag_exp=101509157~103116026~103130498~103130500~103200004~103233427~103252644~103252646~103301114~103301116~104481633~104481635~104506547", … }
+​​​​​​
+5: Object { scriptParseCompile: 93.838, total: 178.738, scripting: 84.483, … }
+​​​​​​
+6: Object { scripting: 51.5840000000001, total: 61.3830000000001, url: "https://www.googletagmanager.com/gtm.js?id=GTM-P8QHT45N", … }
+​​​​​​
+length: 7
+​​​​​​
+<prototype>: Array []
+​​​​​
+sortedBy: Array [ "total" ]
+​​​​​
+summary: Object { wastedMs: 964.4999999999985 }
+​​​​​
+type: "table"
+​​​​​
+<prototype>: Object { … }
+​​​​
+displayValue: "1.0 s"
+​​​​
+id: "bootup-time"
+​​​​
+metricSavings: Object { TBT: 400 }
+​​​​
+numericUnit: "millisecond"
+​​​​
+numericValue: 964.4999999999985
+​​​​
+score: 1
+​​​​
+scoreDisplayMode: "metricSavings"
+​​​​
+title: "JavaScript execution time"
+​​​​
+<prototype>: Object { … }
+​​​
+"cache-insight": Object { id: "cache-insight", title: "Use efficient cache lifetimes", description: "A long cache lifetime can speed up repeat visits to your page. [Learn more](https://web.dev/uses-long-cache-ttl/).", … }
+​​​
+"cls-culprits-insight": Object { id: "cls-culprits-insight", title: "Layout shift culprits", description: "Layout shifts occur when elements move absent any user interaction. [Investigate the causes of layout shifts](https://web.dev/articles/optimize-cls), such as elements being added, removed, or their fonts changing as the page loads.", … }
+​​​
+"critical-request-chains": Object { id: "critical-request-chains", title: "Avoid chaining critical requests", description: "The Critical Request Chains below show you what resources are loaded with a high priority. Consider reducing the length of chains, reducing the download size of resources, or deferring the download of unnecessary resources to improve page load. [Learn how to avoid chaining critical requests](https://developer.chrome.com/docs/lighthouse/performance/critical-request-chains/).", … }
+​​​
+"cumulative-layout-shift": Object { id: "cumulative-layout-shift", title: "Cumulative Layout Shift", description: "Cumulative Layout Shift measures the movement of visible elements within the viewport. [Learn more about the Cumulative Layout Shift metric](https://web.dev/articles/cls).", … }
+​​​
+diagnostics: Object { id: "diagnostics", title: "Diagnostics", description: "Collection of useful page vitals.", … }
+​​​
+"document-latency-insight": Object { id: "document-latency-insight", title: "Document request latency", description: "Your first network request is the most important.  Reduce its latency by avoiding redirects, ensuring a fast server response, and enabling text compression.", … }
+​​​
+"dom-size": Object { id: "dom-size", title: "Avoid an excessive DOM size", description: "A large DOM will increase memory usage, cause longer [style calculations](https://developers.google.com/web/fundamentals/performance/rendering/reduce-the-scope-and-complexity-of-style-calculations), and produce costly [layout reflows](https://developers.google.com/speed/articles/reflow). [Learn how to avoid an excessive DOM size](https://developer.chrome.com/docs/lighthouse/performance/dom-size/).", … }
+​​​
+"dom-size-insight": Object { id: "dom-size-insight", title: "Optimize DOM size", description: "A large DOM can increase the duration of style calculations and layout reflows, impacting page responsiveness. A large DOM will also increase memory usage. [Learn how to avoid an excessive DOM size](https://developer.chrome.com/docs/lighthouse/performance/dom-size/).", … }
+​​​
+"duplicated-javascript": Object { id: "duplicated-javascript", title: "Remove duplicate modules in JavaScript bundles", description: "Remove large, duplicate JavaScript modules from bundles to reduce unnecessary bytes consumed by network activity. ", … }
+​​​
+"duplicated-javascript-insight": Object { id: "duplicated-javascript-insight", title: "Duplicated JavaScript", description: "Remove large, duplicate JavaScript modules from bundles to reduce unnecessary bytes consumed by network activity.", … }
+​​​
+"efficient-animated-content": Object { id: "efficient-animated-content", title: "Use video formats for animated content", description: "Large GIFs are inefficient for delivering animated content. Consider using MPEG4/WebM videos for animations and PNG/WebP for static images instead of GIF to save network bytes. [Learn more about efficient video formats](https://developer.chrome.com/docs/lighthouse/performance/efficient-animated-content/)", … }
+​​​
+"final-screenshot": Object { id: "final-screenshot", title: "Final Screenshot", description: "The last screenshot captured of the pageload.", … }
+​​​
+"first-contentful-paint": Object { id: "first-contentful-paint", title: "First Contentful Paint", description: "First Contentful Paint marks the time at which the first text or image is painted. [Learn more about the First Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/).", … }
+​​​
+"first-meaningful-paint": Object { id: "first-meaningful-paint", title: "First Meaningful Paint", description: "First Meaningful Paint measures when the primary content of a page is visible. [Learn more about the First Meaningful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/first-meaningful-paint/).", … }
+​​​
+"font-display": Object { id: "font-display", title: "Ensure text remains visible during webfont load", description: "Leverage the `font-display` CSS feature to ensure text is user-visible while webfonts are loading. [Learn more about `font-display`](https://developer.chrome.com/docs/lighthouse/performance/font-display/).", … }
+​​​
+"font-display-insight": Object { id: "font-display-insight", title: "Font display", description: "Consider setting [font-display](https://developer.chrome.com/blog/font-display) to swap or optional to ensure text is consistently visible. swap can be further optimized to mitigate layout shifts with [font metric overrides](https://developer.chrome.com/blog/font-fallbacks).", … }
+​​​
+"forced-reflow-insight": Object { id: "forced-reflow-insight", title: "Forced reflow", description: "Many APIs, typically reading layout geometry, force the rendering engine to pause script execution in order to calculate the style and layout. Learn more about [forced reflow](https://developers.google.com/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing#avoid-forced-synchronous-layouts) and its mitigations.", … }
+​​​
+"image-delivery-insight": Object { id: "image-delivery-insight", title: "Improve image delivery", description: "Reducing the download time of images can improve the perceived load time of the page and LCP. [Learn more about optimizing image size](https://developer.chrome.com/docs/lighthouse/performance/uses-optimized-images/)", … }
+​​​
+"interaction-to-next-paint-insight": Object { id: "interaction-to-next-paint-insight", title: "INP by phase", description: "Start investigating with the longest phase. [Delays can be minimized](https://web.dev/articles/optimize-inp#optimize_interactions). To reduce processing duration, [optimize the main-thread costs](https://web.dev/articles/optimize-long-tasks), often JS.", … }
+​​​
+interactive: Object { id: "interactive", title: "Time to Interactive", description: "Time to Interactive is the amount of time it takes for the page to become fully interactive. [Learn more about the Time to Interactive metric](https://developer.chrome.com/docs/lighthouse/performance/interactive/).", … }
+​​​
+"largest-contentful-paint": Object { id: "largest-contentful-paint", title: "Largest Contentful Paint", description: "Largest Contentful Paint marks the time at which the largest text or image is painted. [Learn more about the Largest Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)", … }
+​​​
+"largest-contentful-paint-element": Object { id: "largest-contentful-paint-element", title: "Largest Contentful Paint element", description: "This is the largest contentful element painted within the viewport. [Learn more about the Largest Contentful Paint element](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)", … }
+​​​
+"layout-shifts": Object { id: "layout-shifts", title: "Avoid large layout shifts", description: "These are the largest layout shifts observed on the page. Each table item represents a single layout shift, and shows the element that shifted the most. Below each item are possible root causes that led to the layout shift. Some of these layout shifts may not be included in the CLS metric value due to [windowing](https://web.dev/articles/cls#what_is_cls). [Learn how to improve CLS](https://web.dev/articles/optimize-cls)", … }
+​​​
+"lcp-discovery-insight": Object { id: "lcp-discovery-insight", title: "LCP request discovery", description: "Optimize LCP by making the LCP image [discoverable](https://web.dev/articles/optimize-lcp#1_eliminate_resource_load_delay) from the HTML immediately, and [avoiding lazy-loading](https://web.dev/articles/lcp-lazy-loading)", … }
+​​​
+"lcp-lazy-loaded": Object { id: "lcp-lazy-loaded", title: "Largest Contentful Paint image was not lazily loaded", description: "Above-the-fold images that are lazily loaded render later in the page lifecycle, which can delay the largest contentful paint. [Learn more about optimal lazy loading](https://web.dev/articles/lcp-lazy-loading).", … }
+​​​
+"lcp-phases-insight": Object { id: "lcp-phases-insight", title: "LCP by phase", description: "Each [phase has specific improvement strategies](https://web.dev/articles/optimize-lcp#lcp-breakdown). Ideally, most of the LCP time should be spent on loading the resources, not within delays.", … }
+​​​
+"legacy-javascript": Object { id: "legacy-javascript", title: "Avoid serving legacy JavaScript to modern browsers", description: "Polyfills and transforms enable legacy browsers to use new JavaScript features. However, many aren't necessary for modern browsers. Consider modifying your JavaScript build process to not transpile [Baseline](https://web.dev/baseline) features, unless you know you must support legacy browsers. [Learn why most sites can deploy ES6+ code without transpiling](https://philipwalton.com/articles/the-state-of-es5-on-the-web/)", … }
+​​​
+"legacy-javascript-insight": Object { id: "legacy-javascript-insight", title: "Legacy JavaScript", description: "Polyfills and transforms enable legacy browsers to use new JavaScript features. However, many aren't necessary for modern browsers. Consider modifying your JavaScript build process to not transpile [Baseline](https://web.dev/articles/baseline-and-polyfills) features, unless you know you must support legacy browsers. [Learn why most sites can deploy ES6+ code without transpiling](https://philipwalton.com/articles/the-state-of-es5-on-the-web/)", … }
+​​​
+"long-tasks": Object { id: "long-tasks", title: "Avoid long main-thread tasks", description: "Lists the longest tasks on the main thread, useful for identifying worst contributors to input delay. [Learn how to avoid long main-thread tasks](https://web.dev/articles/optimize-long-tasks)", … }
+​​​
+"main-thread-tasks": Object { id: "main-thread-tasks", title: "Tasks", description: "Lists the toplevel main thread tasks that executed during page load.", … }
+​​​
+"mainthread-work-breakdown": Object { id: "mainthread-work-breakdown", title: "Minimize main-thread work", description: "Consider reducing the time spent parsing, compiling and executing JS. You may find delivering smaller JS payloads helps with this. [Learn how to minimize main-thread work](https://developer.chrome.com/docs/lighthouse/performance/mainthread-work-breakdown/)", … }
+​​​
+"max-potential-fid": Object { id: "max-potential-fid", title: "Max Potential First Input Delay", description: "The maximum potential First Input Delay that your users could experience is the duration of the longest task. [Learn more about the Maximum Potential First Input Delay metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-max-potential-fid/).", … }
+​​​
+metrics: Object { id: "metrics", title: "Metrics", description: "Collects all available metrics.", … }
+​​​
+"modern-image-formats": Object { id: "modern-image-formats", title: "Serve images in next-gen formats", description: "Image formats like WebP and AVIF often provide better compression than PNG or JPEG, which means faster downloads and less data consumption. [Learn more about modern image formats](https://developer.chrome.com/docs/lighthouse/performance/uses-webp-images/).", … }
+​​​
+"network-dependency-tree-insight": Object { id: "network-dependency-tree-insight", title: "Network dependency tree", description: "[Avoid chaining critical requests](https://developer.chrome.com/docs/lighthouse/performance/critical-request-chains) by reducing the length of chains, reducing the download size of resources, or deferring the download of unnecessary resources to improve page load.", … }
+​​​
+"network-requests": Object { id: "network-requests", title: "Network Requests", description: "Lists the network requests that were made during page load.", … }
+​​​
+"network-rtt": Object { id: "network-rtt", title: "Network Round Trip Times", description: "Network round trip times (RTT) have a large impact on performance. If the RTT to an origin is high, it's an indication that servers closer to the user could improve performance. [Learn more about the Round Trip Time](https://hpbn.co/primer-on-latency-and-bandwidth/).", … }
+​​​
+"network-server-latency": Object { id: "network-server-latency", title: "Server Backend Latencies", description: "Server latencies can impact web performance. If the server latency of an origin is high, it's an indication the server is overloaded or has poor backend performance. [Learn more about server response time](https://hpbn.co/primer-on-web-performance/#analyzing-the-resource-waterfall).", … }
+​​​
+"no-document-write": Object { id: "no-document-write", title: "Avoids `document.write()`", description: "For users on slow connections, external scripts dynamically injected via `document.write()` can delay page load by tens of seconds. [Learn how to avoid document.write()](https://developer.chrome.com/docs/lighthouse/best-practices/no-document-write/).", … }
+​​​
+"non-composited-animations": Object { id: "non-composited-animations", title: "Avoid non-composited animations", description: "Animations which are not composited can be janky and increase CLS. [Learn how to avoid non-composited animations](https://developer.chrome.com/docs/lighthouse/performance/non-composited-animations/)", … }
+​​​
+"offscreen-images": Object { id: "offscreen-images", title: "Defer offscreen images", description: "Consider lazy-loading offscreen and hidden images after all critical resources have finished loading to lower time to interactive. [Learn how to defer offscreen images](https://developer.chrome.com/docs/lighthouse/performance/offscreen-images/).", … }
+​​​
+"prioritize-lcp-image": Object { id: "prioritize-lcp-image", title: "Preload Largest Contentful Paint image", description: "If the LCP element is dynamically added to the page, you should preload the image in order to improve LCP. [Learn more about preloading LCP elements](https://web.dev/articles/optimize-lcp#optimize_when_the_resource_is_discovered).", … }
+​​​
+redirects: Object { id: "redirects", title: "Avoid multiple page redirects", description: "Redirects introduce additional delays before the page can be loaded. [Learn how to avoid page redirects](https://developer.chrome.com/docs/lighthouse/performance/redirects/).", … }
+​​​
+"render-blocking-insight": Object { id: "render-blocking-insight", title: "Render blocking requests", description: "Requests are blocking the page's initial render, which may delay LCP. [Deferring or inlining](https://web.dev/learn/performance/understanding-the-critical-path#render-blocking_resources/) can move these network requests out of the critical path.", … }
+​​​
+"render-blocking-resources": Object { id: "render-blocking-resources", title: "Eliminate render-blocking resources", description: "Resources are blocking the first paint of your page. Consider delivering critical JS/CSS inline and deferring all non-critical JS/styles. [Learn how to eliminate render-blocking resources](https://developer.chrome.com/docs/lighthouse/performance/render-blocking-resources/).", … }
+​​​
+"resource-summary": Object { id: "resource-summary", title: "Resources Summary", description: "Aggregates all network requests and groups them by type", … }
+​​​
+"screenshot-thumbnails": Object { id: "screenshot-thumbnails", title: "Screenshot Thumbnails", description: "This is what the load of your site looked like.", … }
+​​​
+"script-treemap-data": Object { id: "script-treemap-data", title: "Script Treemap Data", description: "Used for treemap app", … }
+​​​
+"server-response-time": Object { id: "server-response-time", title: "Initial server response time was short", description: "Keep the server response time for the main document short because all other requests depend on it. [Learn more about the Time to First Byte metric](https://developer.chrome.com/docs/lighthouse/performance/time-to-first-byte/).", … }
+​​​
+"speed-index": Object { id: "speed-index", title: "Speed Index", description: "Speed Index shows how quickly the contents of a page are visibly populated. [Learn more about the Speed Index metric](https://developer.chrome.com/docs/lighthouse/performance/speed-index/).", … }
+​​​
+"third-parties-insight": Object { id: "third-parties-insight", title: "3rd parties", description: "3rd party code can significantly impact load performance. [Reduce and defer loading of 3rd party code](https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/loading-third-party-javascript/) to prioritize your page's content.", … }
+​​​
+"third-party-facades": Object { id: "third-party-facades", title: "Lazy load third-party resources with facades", description: "Some third-party embeds can be lazy loaded. Consider replacing them with a facade until they are required. [Learn how to defer third-parties with a facade](https://developer.chrome.com/docs/lighthouse/performance/third-party-facades/).", … }
+​​​
+"third-party-summary": Object { id: "third-party-summary", title: "Reduce the impact of third-party code", description: "Third-party code can significantly impact load performance. Limit the number of redundant third-party providers and try to load third-party code after your page has primarily finished loading. [Learn how to minimize third-party impact](https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/loading-third-party-javascript/).", … }
+​​​
+"total-blocking-time": Object { id: "total-blocking-time", title: "Total Blocking Time", description: "Sum of all time periods between FCP and Time to Interactive, when task length exceeded 50ms, expressed in milliseconds. [Learn more about the Total Blocking Time metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-total-blocking-time/).", … }
+​​​
+"total-byte-weight": Object { id: "total-byte-weight", title: "Avoid enormous network payloads", description: "Large network payloads cost users real money and are highly correlated with long load times. [Learn how to reduce payload sizes](https://developer.chrome.com/docs/lighthouse/performance/total-byte-weight/).", … }
+​​​
+"unminified-css": Object { id: "unminified-css", title: "Minify CSS", description: "Minifying CSS files can reduce network payload sizes. [Learn how to minify CSS](https://developer.chrome.com/docs/lighthouse/performance/unminified-css/).", … }
+​​​
+"unminified-javascript": Object { id: "unminified-javascript", title: "Minify JavaScript", description: "Minifying JavaScript files can reduce payload sizes and script parse time. [Learn how to minify JavaScript](https://developer.chrome.com/docs/lighthouse/performance/unminified-javascript/).", … }
+​​​
+"unsized-images": Object { id: "unsized-images", title: "Image elements do not have explicit `width` and `height`", description: "Set an explicit width and height on image elements to reduce layout shifts and improve CLS. [Learn how to set image dimensions](https://web.dev/articles/optimize-cls#images_without_dimensions)", … }
+​​​
+"unused-css-rules": Object { id: "unused-css-rules", title: "Reduce unused CSS", description: "Reduce unused rules from stylesheets and defer CSS not used for above-the-fold content to decrease bytes consumed by network activity. [Learn how to reduce unused CSS](https://developer.chrome.com/docs/lighthouse/performance/unused-css-rules/).", … }
+​​​
+"unused-javascript": Object { id: "unused-javascript", title: "Reduce unused JavaScript", description: "Reduce unused JavaScript and defer loading scripts until they are required to decrease bytes consumed by network activity. [Learn how to reduce unused JavaScript](https://developer.chrome.com/docs/lighthouse/performance/unused-javascript/).", … }
+​​​
+"user-timings": Object { id: "user-timings", title: "User Timing marks and measures", description: "Consider instrumenting your app with the User Timing API to measure your app's real-world performance during key user experiences. [Learn more about User Timing marks](https://developer.chrome.com/docs/lighthouse/performance/user-timings/).", … }
+​​​
+"uses-long-cache-ttl": Object { id: "uses-long-cache-ttl", title: "Serve static assets with an efficient cache policy", description: "A long cache lifetime can speed up repeat visits to your page. [Learn more about efficient cache policies](https://developer.chrome.com/docs/lighthouse/performance/uses-long-cache-ttl/).", … }
+​​​
+"uses-optimized-images": Object { id: "uses-optimized-images", title: "Efficiently encode images", description: "Optimized images load faster and consume less cellular data. [Learn how to efficiently encode images](https://developer.chrome.com/docs/lighthouse/performance/uses-optimized-images/).", … }
+​​​
+"uses-passive-event-listeners": Object { id: "uses-passive-event-listeners", title: "Does not use passive listeners to improve scrolling performance", description: "Consider marking your touch and wheel event listeners as `passive` to improve your page's scroll performance. [Learn more about adopting passive event listeners](https://developer.chrome.com/docs/lighthouse/best-practices/uses-passive-event-listeners/).", … }
+​​​
+"uses-rel-preconnect": Object { id: "uses-rel-preconnect", title: "Preconnect to required origins", description: "Consider adding `preconnect` or `dns-prefetch` resource hints to establish early connections to important third-party origins. [Learn how to preconnect to required origins](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/).", … }
+​​​
+"uses-responsive-images": Object { id: "uses-responsive-images", title: "Properly size images", description: "Serve images that are appropriately-sized to save cellular data and improve load time. [Learn how to size images](https://developer.chrome.com/docs/lighthouse/performance/uses-responsive-images/).", … }
+​​​
+"uses-text-compression": Object { id: "uses-text-compression", title: "Enable text compression", description: "Text-based resources should be served with compression (gzip, deflate or brotli) to minimize total network bytes. [Learn more about text compression](https://developer.chrome.com/docs/lighthouse/performance/uses-text-compression/).", … }
+​​​
+viewport: Object { id: "viewport", title: 'Has a `<meta name="viewport">` tag with `width` or `initial-scale`', description: 'A `<meta name="viewport">` not only optimizes your app for mobile screen sizes, but also prevents [a 300 millisecond delay to user input](https://developer.chrome.com/blog/300ms-tap-delay-gone-away/). [Learn more about using the viewport meta tag](https://developer.chrome.com/docs/lighthouse/pwa/viewport/).', … }
+​​​
+"viewport-insight": Object { id: "viewport-insight", title: "Optimize viewport for mobile", description: "Tap interactions may be [delayed by up to 300 ms](https://developer.chrome.com/blog/300ms-tap-delay-gone-away/) if the viewport is not optimized for mobile.", … }
+​​​
+<prototype>: Object { … }
+​​
+categories: Object { performance: {…} }
+​​​
+performance: Object { id: "performance", title: "Performance", score: 0.54, … }
+​​​
+<prototype>: Object { … }
+​​
+categoryGroups: Object { "seo-crawl": {…}, "seo-content": {…}, "best-practices-trust-safety": {…}, … }
+​​​
+"a11y-aria": Object { title: "ARIA", description: "These are opportunities to improve the usage of ARIA in your application which may enhance the experience for users of assistive technology, like a screen reader." }
+​​​
+"a11y-audio-video": Object { title: "Audio and video", description: "These are opportunities to provide alternative content for audio and video. This may improve the experience for users with hearing or vision impairments." }
+​​​
+"a11y-best-practices": Object { title: "Best practices", description: "These items highlight common accessibility best practices." }
+​​​
+"a11y-color-contrast": Object { title: "Contrast", description: "These are opportunities to improve the legibility of your content." }
+​​​
+"a11y-language": Object { title: "Internationalization and localization", description: "These are opportunities to improve the interpretation of your content by users in different locales." }
+​​​
+"a11y-names-labels": Object { title: "Names and labels", description: "These are opportunities to improve the semantics of the controls in your application. This may enhance the experience for users of assistive technology, like a screen reader." }
+​​​
+"a11y-navigation": Object { title: "Navigation", description: "These are opportunities to improve keyboard navigation in your application." }
+​​​
+"a11y-tables-lists": Object { title: "Tables and lists", description: "These are opportunities to improve the experience of reading tabular or list data using assistive technology, like a screen reader." }
+​​​
+"best-practices-browser-compat": Object { title: "Browser Compatibility" }
+​​​
+"best-practices-general": Object { title: "General" }
+​​​
+"best-practices-trust-safety": Object { title: "Trust and Safety" }
+​​​
+"best-practices-ux": Object { title: "User Experience" }
+​​​
+diagnostics: Object { title: "Diagnostics", description: "More information about the performance of your application. These numbers don't [directly affect](https://developer.chrome.com/docs/lighthouse/performance/performance-scoring/) the Performance score." }
+​​​
+insights: Object { title: "Insights", description: "These insights are also available in the Chrome DevTools Performance Panel - [record a trace](https://developer.chrome.com/docs/devtools/performance/reference) to view more detailed information." }
+​​​
+metrics: Object { title: "Metrics" }
+​​​
+"seo-content": Object { title: "Content Best Practices", description: "Format your HTML in a way that enables crawlers to better understand your app’s content." }
+​​​
+"seo-crawl": Object { title: "Crawling and Indexing", description: "To appear in search results, crawlers need access to your app." }
+​​​​
+description: "To appear in search results, crawlers need access to your app."
+​​​​
+title: "Crawling and Indexing"
+​​​​
+<prototype>: Object { … }
+​​​
+"seo-mobile": Object { title: "Mobile Friendly", description: "Make sure your pages are mobile friendly so users don’t have to pinch or zoom in order to read the content pages. [Learn how to make pages mobile-friendly](https://developers.google.com/search/mobile-sites/)." }
+​​​
+<prototype>: Object { … }
+​​
+configSettings: Object { emulatedFormFactor: "desktop", formFactor: "desktop", locale: "en-US", … }
+​​
+entities: Array(7) [ {…}, {…}, {…}, … ]
+​​​
+0: Object { name: "aarogyaabharat.com", isFirstParty: true, isUnrecognized: true, … }
+​​​
+1: Object { name: "Cloudflare", homepage: "https://www.cloudflare.com/website-optimization/", category: "utility", … }
+​​​
+2: Object { name: "Google Tag Manager", homepage: "https://marketingplatform.google.com/about/tag-manager/", category: "tag-manager", … }
+​​​
+3: Object { name: "Other Google APIs/SDKs", homepage: "https://developers.google.com/apis-explorer/#p/", category: "utility", … }
+​​​
+4: Object { name: "Google Analytics", homepage: "https://marketingplatform.google.com/about/analytics/", category: "analytics", … }
+​​​
+5: Object { name: "Google/Doubleclick Ads", homepage: "https://marketingplatform.google.com/about/enterprise/", category: "ad", … }
+​​​
+6: Object { name: "Google CDN", homepage: "https://developers.google.com/speed/libraries/", category: "cdn", … }
+​​​
+length: 7
+​​​
+<prototype>: Array []
+​​
+environment: Object { networkUserAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36", hostUserAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/136.0.7103.92 Safari/537.36", benchmarkIndex: 653.5 }
+​​
+fetchTime: "2025-05-23T04:28:00.292Z"
+​​
+finalDisplayedUrl: "https://aarogyaabharat.com/"
+​​
+finalUrl: "https://aarogyaabharat.com/"
+​​
+fullPageScreenshot: Object { nodes: {…}, screenshot: {…} }
+​​
+i18n: Object { rendererFormattedStrings: {…} }
+​​
+lighthouseVersion: "12.6.0"
+​​
+mainDocumentUrl: "https://aarogyaabharat.com/"
+​​
+requestedUrl: "https://aarogyaabharat.com/"
+​​
+runWarnings: Array []
+​​​
+length: 0
+​​​
+<prototype>: Array []
+​​
+timing: Object { total: 31413.8 }
+​​
+userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/136.0.7103.92 Safari/537.36"
+​​
+<prototype>: Object { … }
+​
+loadingExperience: Object { initial_url: "https://aarogyaabharat.com/" }
+​​
+initial_url: "https://aarogyaabharat.com/"
+​​
+<prototype>: Object { … }
+​​​
+__defineGetter__: function __defineGetter__()
+​​​
+__defineSetter__: function __defineSetter__()
+​​​
+__lookupGetter__: function __lookupGetter__()
+​​​
+__lookupSetter__: function __lookupSetter__()
+​​​
+__proto__: 
+​​​
+constructor: function Object()
+​​​
+hasOwnProperty: function hasOwnProperty()
+​​​
+isPrototypeOf: function isPrototypeOf()
+​​​
+propertyIsEnumerable: function propertyIsEnumerable()
+​​​
+toLocaleString: function toLocaleString()
+​​​
+toString: function toString()
+​​​
+valueOf: function valueOf()
+​​​
+<get __proto__()>: function __proto__()
+​​​
+<set __proto__()>: function __proto__()
+​
+<prototype>: Object { … }
+​​
+__defineGetter__: function __defineGetter__()
+​​
+__defineSetter__: function __defineSetter__()
+​​
+__lookupGetter__: function __lookupGetter__()
+​​
+__lookupSetter__: function __lookupSetter__()
+​​
+__proto__: 
+​​
+constructor: function Object()
+​​
+hasOwnProperty: function hasOwnProperty()
+​​
+isPrototypeOf: function isPrototypeOf()
+​​
+propertyIsEnumerable: function propertyIsEnumerable()
+​​
+toLocaleString: function toLocaleString()
+​​
+toString: function toString()
+​​
+valueOf: function valueOf()
+​​
+<get __proto__()>: function __proto__()
+​​
+<set __proto__()>: function __proto__()
