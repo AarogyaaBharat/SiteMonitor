@@ -62,13 +62,14 @@
             </div>
         </div>    
         <h2 class="status-text">Analyzing your site</h2>
-        <p class="detail-text" id="current-task">Generating detailed recommendations...</p>
+         <div class="time-display" id="time-display">00:00</div>
+        {{-- <p class="detail-text" id="current-task">Generating detailed recommendations...</p> --}}
         <div class="progress-bar">
             <div class="progress-fill" style="width: 100%;"></div>
         </div>
     </div>
         </section>
-        <section id="analysis-results" class="mb-16 hidden">
+        <section id="analysis-results" class="mb-18 hidden">
             <div class="flex justify-center mb-8">
                 <div class="tab-container inline-flex rounded-md shadow-sm overflow-x-auto w-full justify-center" role="group">
                     <button type="button" class="tab-btn tab-active px-4 sm:px-6 py-2 text-sm font-medium rounded-l-lg" data-tab="sitemap" id="sitemap-tab-btn">
@@ -88,7 +89,7 @@
                 <div id="sitemap-tab" class="tab-content">
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 mb-6">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                            <h3 class="text-xl font-bold">Site Map Visualization</h3>
+                            <h3 class="text-xl font-bold">Site Map</h3>
                             <button id="download-sitemap" class="btn flex items-center space-x-2 bg-[var(--primary)] text-white px-4 py-2 rounded-lg text-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
@@ -368,6 +369,7 @@ document.getElementById('analyze-btn').addEventListener('click', function() {
     showProgressBar();
     updateProgressBar(10); // Start progress
     updateProgress = startAnimatedProgress();
+    initiateCustomTimer();
     updateProgress(10); // Start at 10%
     // Make API request
     fetch('/site-checker?site=' + encodeURIComponent(url))
@@ -379,6 +381,7 @@ document.getElementById('analyze-btn').addEventListener('click', function() {
     .then(data => {
         updateProgress(100); // Start at 10%
         updateProgressBar(100); // Complete progress
+        haltCustomTimer();
         document.getElementById('loader-container').classList.add('hidden');
         setTimeout(hideProgressBar, 500); // Hide after a short delay
 
@@ -413,7 +416,7 @@ document.getElementById('analyze-btn').addEventListener('click', function() {
                         sitemapItem.innerHTML = `
                             <div class="flex items-center">
                                 <div class="w-3 h-3 rounded-full bg-[var(--secondary)]"></div>
-                                <div class="ml-2 break-all">${item}</div>
+                                <div class="ml-2 break-all"><a href="${item}" target="_blank">${item}</a></div>
                             </div>
                         `;
                         sitemapTab.querySelector('.sitemap-visualization').appendChild(sitemapItem);
@@ -431,7 +434,7 @@ document.getElementById('analyze-btn').addEventListener('click', function() {
                         sitemapItem.innerHTML = `
                             <div class="flex items-center">
                                 <div class="w-3 h-3 rounded-full bg-[var(--secondary)]"></div>
-                                <div class="ml-2 break-all">${item}</div>
+                                <div class="ml-2 break-all"><a href="${item}" target="_blank">${item}</a></div>
                             </div>
                         `;
                         sitemapTab.querySelector('.sitemap-visualization').appendChild(sitemapItem);
@@ -449,7 +452,7 @@ document.getElementById('analyze-btn').addEventListener('click', function() {
                 sitemapItem.innerHTML = `
                     <div class="flex items-center">
                         <div class="w-3 h-3 rounded-full bg-[var(--secondary)]"></div>
-                        <div class="ml-2 break-all">${item}</div>
+                        <div class="ml-2 break-all"><a href="${item}" target="_blank">${item}</a></div>
                     </div>
                 `;
                 sitemapTab.querySelector('.sitemap-visualization').appendChild(sitemapItem);
@@ -472,7 +475,7 @@ document.getElementById('analyze-btn').addEventListener('click', function() {
     urlRow.style.overflowX = 'auto';
     urlRow.classList.add('result-item');
     urlRow.innerHTML = `
-        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm break-all" style="width: 60%; overflow-x: auto;">${url}</td>
+        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm break-all" style="width: 60%; overflow-x: auto;"><a href="${url}" target="_blank">${url}</a></td>
         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm" style="width: 20%; overflow-x: auto;">N/A</td>
         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm" style="width: 20%; overflow-x: auto;">
             <span class="px-2 py-1 rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">200 OK</span>
@@ -488,7 +491,7 @@ document.getElementById('analyze-btn').addEventListener('click', function() {
             errorItem.innerHTML = `
                 <div class="flex flex-col sm:flex-row sm:justify-between gap-2">
                     <div>
-                        <div class="font-medium text-red-700 dark:text-red-400 break-all">${error.url}</div>
+                        <div class="font-medium text-red-700 dark:text-red-400 break-all"><a herf='${error.url}'> ${error.url}</a></div>
                         <div class="text-sm text-red-600 dark:text-red-300 mt-1 break-all">Referenced from: ${error.referencedFrom || 'N/A'}</div>
                     </div>
                     <div class="text-red-700 dark:text-red-400 font-medium">404 Not Found</div>
@@ -507,6 +510,7 @@ document.getElementById('analyze-btn').addEventListener('click', function() {
         setupDownloads(data);
     })
     .catch(error => {
+         document.getElementById('loader-container').classList.add('hidden');
         hideProgressBar();
         this.innerHTML = 'Analyze Website';
         console.error('API error:', error);
@@ -857,7 +861,7 @@ function startAnimatedProgress() {
         const taskIndex = Math.min(Math.floor(progress / (100 / tasks.length)), tasks.length - 1);
         if (taskIndex !== currentTask) {
             currentTask = taskIndex;
-            currentTaskText.textContent = tasks[currentTask];
+            // currentTaskText.textContent = tasks[currentTask];
         }
 
         // Simulate scanning metrics
@@ -884,7 +888,7 @@ function startAnimatedProgress() {
         updateDisplay(currentProgress);
         
         if (currentProgress >= 100) {
-            currentTaskText.textContent = "Analysis Complete!";
+            // currentTaskText.textContent = "Analysis Complete!";
             clearInterval(progressInterval);
         }
     };
@@ -893,6 +897,47 @@ function startAnimatedProgress() {
 // Global progress updater function
 let updateProgress;
 
-// Initialize progress when page loads
- </script>
+        // Initialize progress when page loads
+    // Start the countdown timer
+function initiateCustomTimer() {
+    customTimerStartTime = Date.now();
+    customTimerInterval = setInterval(refreshCustomTimer, 1000);
+    refreshCustomTimer(); // Update immediately
+}
+
+// Stop the countdown timer
+function haltCustomTimer() {
+    if (customTimerInterval) {
+        clearInterval(customTimerInterval);
+        customTimerInterval = null;
+    }
+    if (customProgressInterval) {
+        clearInterval(customProgressInterval);
+        customProgressInterval = null;
+    }
+}
+
+// Initialize tracking variables
+let customTimerStartTime = null;
+let customTimerInterval = null;
+let customProgressInterval = null;
+
+// Format seconds into MM:SS
+function getFormattedCustomTime(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+// Update the time display element
+function refreshCustomTimer() {
+    if (customTimerStartTime) {
+        const now = Date.now();
+        const timeElapsed = Math.floor((now - customTimerStartTime) / 1000);
+        document.getElementById('time-display').textContent = getFormattedCustomTime(timeElapsed);
+    }
+}
+
+    </script>
+    
 @endsection
