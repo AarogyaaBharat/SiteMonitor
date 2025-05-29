@@ -1,4 +1,4 @@
-@extends('layouts.index')
+@extends('layouts.Index')
 @section('content')
     <!-- Main Card -->
      <main class="container mx-auto px-4 py-8">
