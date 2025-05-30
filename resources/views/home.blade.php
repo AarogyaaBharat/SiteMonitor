@@ -122,6 +122,7 @@
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead>
                                     <tr>
+                                        <th class="px-2 sm:px-3 py-27uj text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Sr.No</th>
                                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">URL</th>
                                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Last Modified</th>
                                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
@@ -460,7 +461,9 @@ document.getElementById('analyze-btn').addEventListener('click', function() {
         }
 
         // Populate URLs table
+        var i=0;
         data.visited_urls.forEach(url => {
+            i++;
     // Uncomment if dynamic status handling is needed
     // let urlStatus;
     // if (data.error_pages.includes(url)) {
@@ -475,6 +478,7 @@ document.getElementById('analyze-btn').addEventListener('click', function() {
     urlRow.style.overflowX = 'auto';
     urlRow.classList.add('result-item');
     urlRow.innerHTML = `
+        <td class="px-2 sm:px-3 py-2 whitespace-nowrap text-sm" overflow-x: auto;">${i}</td>
         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm break-all" style="width: 60%; overflow-x: auto;"><a href="${url}" target="_blank">${url}</a></td>
         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm" style="width: 20%; overflow-x: auto;">N/A</td>
         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm" style="width: 20%; overflow-x: auto;">
@@ -645,16 +649,17 @@ function populateAllUrls(urlsData) {
     
     // Update count in heading
     document.querySelector('#urls-tab h3').textContent = `All URLs (${urlsData.length} found)`;
-    
+     var i=0;
     urlsData.forEach(url => {
         const row = document.createElement('tr');
         row.className = 'result-item';
-        
+        i++;
         const statusClass = url.status === 200 ? 
             'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
             'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
         
         row.innerHTML = `
+             <td class="px-2 sm:px-3 py-2 whitespace-nowrap text-sm" overflow-x: auto;">${i}</td>
             <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm break-all">${url.url}</td>
             <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm">${url.lastModified || 'N/A'}</td>
             <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm">
