@@ -15,7 +15,7 @@ class PageSpeedController extends Controller
     public function __construct()
     {
         $this->client = new Client([
-            'timeout' => 30,
+            'timeout' => 10,
             'verify' => false
         ]);
         $this->psiApiKey = 'AIzaSyC_lpShOkpaHPmzmLFPBW8FwwssQ4DSCB0';
@@ -24,7 +24,7 @@ class PageSpeedController extends Controller
     public function trackMetrics(Request $request)
     {
         set_time_limit(7200);
-        ini_set('memory_limit', '512M');
+        // ini_set('memory_limit', '512M');
         $request->validate([
             'url' => 'required|url',
             'strategy' => 'in:mobile,desktop'

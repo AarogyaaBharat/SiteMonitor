@@ -6,7 +6,7 @@
                 <h2 class="text-xl sm:text-2xl font-bold mb-6 text-center">Enter Your Website URL And Regex Pattern</h2>
                 <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                     <input type="text" id="website-url" placeholder="https://example.com" class="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
-                     <input type="text" id="regex-pattern" placeholder="Enter your regex pattern" class="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                     <input onkeyup="onkeyupevent(event);" type="text" id="regex-pattern" placeholder="Enter your regex pattern" class="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                     <button id="analyze-btn" class="btn bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg">
                         Check Regex
                     </button>
@@ -17,6 +17,29 @@
                 </div>
                 
             </div>
+        </section>
+         <section class="mb-16">
+          <div class="loader-container hidden" id="loader-container">
+        <div class="circle-wrapper">
+            <div class="outer-ring"></div>
+            <div class="middle-ring"></div>
+            <div class="inner-circle">
+                <span id="percentage">100%</span>
+            </div>
+            <div class="dots">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>    
+        <h2 class="status-text">Analyzing your site</h2>
+         <div class="time-display" id="time-display">00:00</div>
+        {{-- <p class="detail-text" id="current-task">Generating detailed recommendations...</p> --}}
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 100%;"></div>
+        </div>
+    </div>
         </section>
         <section id="results" class="hidden">
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 transition-all">
@@ -144,7 +167,22 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show loading state
             analyzeBtn.disabled = true;
             analyzeBtn.innerHTML = 'Analyzing...';
-            
+             updateProgress = startAnimatedProgress();
+            initiateCustomTimer();
+            // for(var i=1;i<=10;i++){    
+            // updateDisplay(i); // Start at 10%
+            // await new Promise(resolve => setTimeout(resolve, 1));
+            // }
+             let i = 1;
+        const interval = setInterval(() => {
+            if (i > 10) {
+                clearInterval(interval); // Stop the loop
+                return;
+            }
+
+          updateDisplay(i); // Start at 10%
+            i++;
+        }, 100); // 100ms delay
             fetch('/check-urls-regx-result?url=' + encodeURIComponent(websiteUrl) + '&regex=' + encodeURIComponent(regexPattern) +'&depth=5', {
                 method: 'GET',
                 headers: {
@@ -153,11 +191,33 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
+               let i = 10;
+        const interval = setInterval(() => {
+            if (i > 50) {
+                clearInterval(interval); // Stop the loop
+                return;
+            }
+
+          updateDisplay(i); // Start at 10%
+            i++;
+        }, 100); 
                 analyzeBtn.disabled = false;
                 analyzeBtn.innerHTML = 'Check Regex';
                 
                 if (data.status === 'success') {
                     // Convert matches object to array
+             let i = 50;
+        const interval = setInterval(() => {
+            if (i > 100) {
+                clearInterval(interval); // Stop the loop
+                return;
+            }
+
+          updateDisplay(i); // Start at 10%
+            i++;
+        }, 100); 
+        setTimeout(() => {
+                    document.getElementById('loader-container').classList.add('hidden');
                     const matchesArray = data.results.matches ? Object.keys(data.results.matches).map(key => ({
                         url: key,
                         match_count: data.results.matches[key].match_count,
@@ -214,11 +274,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                     resultsSection.classList.remove('hidden');
+                    }, 7000); // 2000ms = 2 seconds
                 } else {
+                    document.getElementById('loader-container').classList.add('hidden');
                     showError(data.message || 'An error occurred during analysis.');
                 }
             })
             .catch(error => {
+                document.getElementById('loader-container').classList.add('hidden');
                 console.error('Error:', error);
                 analyzeBtn.disabled = false;
                 analyzeBtn.innerHTML = 'Check Regex';
@@ -248,5 +311,145 @@ document.addEventListener('DOMContentLoaded', function() {
             .replace(/'/g, "&#039;");
     }
 });
+    function showProgressBar() {
+            document.getElementById('progress-bar-container').style.display = 'block';
+        }
+        
+        function hideProgressBar() {
+            document.getElementById('progress-bar-container').style.display = 'none';
+        }
+        
+        function updateProgressBar(percent) {
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = percent + '%';
+        }
+        function startAnimatedProgress() {
+    const tasks = [
+        "Initializing comprehensive analysis...",
+        "Scanning site architecture and structure...",
+        "Analyzing page load performance metrics...",
+        "Evaluating SEO factors and opportunities...",
+        "Checking mobile responsiveness across devices...",
+        "Auditing security protocols and vulnerabilities...",
+        "Analyzing user experience metrics...",
+        "Generating detailed recommendations..."
+    ];
+
+    const percentageText = document.getElementById('percentage');
+    const progressFill = document.querySelector('.progress-fill');
+    const currentTaskText = document.getElementById('current-task');
+    const pagesScanned = document.getElementById('pages-scanned');
+    const issuesFound = document.getElementById('issues-found');
+    const optimization = document.getElementById('optimization');
+
+    document.getElementById('loader-container').classList.remove('hidden');
+    let currentTask = 0;
+    let pages = 0;
+    let issues = 0;
+    let optimizationValue = 0;
+
+    // Update progress display
+    
+    function updateDisplay(progress) {
+        percentageText.textContent = `${progress}%`;
+        progressFill.style.width = `${progress}%`;
+
+        // Update task text based on progress
+        const taskIndex = Math.min(Math.floor(progress / (100 / tasks.length)), tasks.length - 1);
+        if (taskIndex !== currentTask) {
+            currentTask = taskIndex;
+            // currentTaskText.textContent = tasks[currentTask];
+        }
+
+        // Simulate scanning metrics
+        // if (progress % 5 === 0) {
+        //     pages = Math.min(pages + Math.floor(Math.random() * 3) + 1, progress * 2);
+        //     pagesScanned.textContent = pages;
+
+        //     if (progress % 10 === 0) {
+        //         issues = Math.min(issues + Math.floor(Math.random() * 2) + 1, Math.floor(progress / 2));
+        //         issuesFound.textContent = issues;
+        //     }
+
+        //     optimizationValue = Math.min(Math.floor(progress * 0.8), 100);
+        //     optimization.textContent = `${optimizationValue}%`;
+        // }
+    }
+
+    // Start with 0 progress
+    updateDisplay(0);
+
+    // Return a function to update progress from external calls
+    return function(progress) {
+        currentProgress = Math.min(progress, maxProgress);
+        updateDisplay(currentProgress);
+        
+        if (currentProgress >= 100) {
+            // currentTaskText.textContent = "Analysis Complete!";
+            clearInterval(progressInterval);
+        }
+    };
+}
+
+// Global progress updater function
+let updateProgress;
+
+        // Initialize progress when page loads
+    // Start the countdown timer
+function initiateCustomTimer() {
+    customTimerStartTime = Date.now();
+    customTimerInterval = setInterval(refreshCustomTimer, 1000);
+    refreshCustomTimer(); // Update immediately
+}
+
+// Stop the countdown timer
+function haltCustomTimer() {
+    if (customTimerInterval) {
+        clearInterval(customTimerInterval);
+        customTimerInterval = null;
+    }
+    if (customProgressInterval) {
+        clearInterval(customProgressInterval);
+        customProgressInterval = null;
+    }
+}
+
+// Initialize tracking variables
+let customTimerStartTime = null;
+let customTimerInterval = null;
+let customProgressInterval = null;
+
+// Format seconds into MM:SS
+function getFormattedCustomTime(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+// Update the time display element
+function refreshCustomTimer() {
+    if (customTimerStartTime) {
+        const now = Date.now();
+        const timeElapsed = Math.floor((now - customTimerStartTime) / 1000);
+        document.getElementById('time-display').textContent = getFormattedCustomTime(timeElapsed);
+    }
+}
+ function updateDisplay(progress) {
+
+     const percentageText = document.getElementById('percentage');
+    const progressFill = document.querySelector('.progress-fill');
+    const currentTaskText = document.getElementById('current-task');
+    const pagesScanned = document.getElementById('pages-scanned');
+    const issuesFound = document.getElementById('issues-found');
+    const optimization = document.getElementById('optimization');
+    
+        percentageText.textContent = `${progress}%`;
+        progressFill.style.width = `${progress}%`;
+    }
+function onkeyupevent(event) {
+    if (event.keyCode === 13 || event.which === 13) {
+        document.getElementById("analyze-btn").click();
+    }
+}
 </script>
 @endsection

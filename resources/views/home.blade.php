@@ -34,7 +34,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 transition-all">
                 <h2 class="text-xl sm:text-2xl font-bold mb-6 text-center">Enter Your Website URL</h2>
                 <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                    <input type="text" id="website-url" placeholder="https://example.com" class="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                    <input type="text" id="website-url" placeholder="https://example.com" class="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" onkeyup="onkeyupevent(event);">
                     <button id="analyze-btn" class="btn bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg">
                         Analyze Website
                     </button>
@@ -366,24 +366,24 @@ document.getElementById('analyze-btn').addEventListener('click', function() {
     // Show loading spinner
     this.innerHTML = '<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
     
-    showProgressBar();
-    updateProgressBar(10); // Start progress
+    // showProgressBar();
+    // updateProgressBar(10); // Start progress
     updateProgress = startAnimatedProgress();
     initiateCustomTimer();
     updateProgress(10); // Start at 10%
     // Make API request
     fetch('/site-checker?site=' + encodeURIComponent(url))
     .then(response => {
-        updateProgressBar(50); // Midway progress
+        // updateProgressBar(50); // Midway progress
         updateProgress(50); // Start at 50%
         return response.json();
     })
     .then(data => {
         updateProgress(100); // Start at 10%
-        updateProgressBar(100); // Complete progress
+        // updateProgressBar(100); // Complete progress
         haltCustomTimer();
         document.getElementById('loader-container').classList.add('hidden');
-        setTimeout(hideProgressBar, 500); // Hide after a short delay
+        // setTimeout(hideProgressBar, 500); // Hide after a short delay
 
         console.log(data);
         this.innerHTML = 'Analyze Website';
@@ -511,7 +511,7 @@ document.getElementById('analyze-btn').addEventListener('click', function() {
     })
     .catch(error => {
          document.getElementById('loader-container').classList.add('hidden');
-        hideProgressBar();
+        //hideProgressBar();
         this.innerHTML = 'Analyze Website';
         console.error('API error:', error);
         alert('Something went wrong. Please try again.');
@@ -711,8 +711,8 @@ document.getElementById('upload-excel-form').addEventListener('submit', async fu
     const formData = new FormData(this);
 
     try {
-        showProgressBar();
-        updateProgressBar(10); // Start progress
+        // showProgressBar();
+        // updateProgressBar(10); // Start progress
         updateProgress = startAnimatedProgress();
     updateProgress(10); // Start at 10%
 
@@ -725,11 +725,11 @@ document.getElementById('upload-excel-form').addEventListener('submit', async fu
             throw new Error('Failed to upload and analyze the file.');
         }
 
-        updateProgressBar(70); // Midway progress
+        // updateProgressBar(70); // Midway progress
         const result = await response.json();
 
-        updateProgressBar(100); // Complete progress
-        setTimeout(hideProgressBar, 500); // Hide after a short delay
+        // updateProgressBar(100); // Complete progress
+        // setTimeout(hideProgressBar, 500); // Hide after a short delay
 
         // Assuming the server returns data in the format we need
         displayAnalysisResults(result);
@@ -754,7 +754,7 @@ document.getElementById('upload-excel-form').addEventListener('submit', async fu
     } catch (error) {
         console.error(error);
         alert('An error occurred while processing the file.');
-        hideProgressBar();
+        // hideProgressBar();
     }
 });
 function generateUrlsCsv1(data) {
@@ -809,18 +809,18 @@ function generate404Csv1(data) {
         console.log('File accepted:', file);
         // You can process file here
     }
-    function showProgressBar() {
-            document.getElementById('progress-bar-container').style.display = 'block';
-        }
+    // function showProgressBar() {
+    //         document.getElementById('progress-bar-container').style.display = 'block';
+    //     }
         
-        function hideProgressBar() {
-            document.getElementById('progress-bar-container').style.display = 'none';
-        }
+    //     function hideProgressBar() {
+    //         document.getElementById('progress-bar-container').style.display = 'none';
+    //     }
         
-        function updateProgressBar(percent) {
-            const progressBar = document.getElementById('progress-bar');
-            progressBar.style.width = percent + '%';
-        }
+    //     function updateProgressBar(percent) {
+    //         const progressBar = document.getElementById('progress-bar');
+    //         progressBar.style.width = percent + '%';
+    //     }
 // Global variables to track progress
 let progressInterval;
 let currentProgress = 0;
@@ -937,7 +937,11 @@ function refreshCustomTimer() {
         document.getElementById('time-display').textContent = getFormattedCustomTime(timeElapsed);
     }
 }
-
-    </script>
+function onkeyupevent(event) {
+    if (event.keyCode === 13 || event.which === 13) {
+        document.getElementById("analyze-btn").click();
+    }
+}
+  </script>
     
 @endsection

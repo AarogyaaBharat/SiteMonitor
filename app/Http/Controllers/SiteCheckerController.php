@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\domains;
+use App\Models\regexData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -13,6 +15,7 @@ use Symfony\Component\DomCrawler\Crawler as DomCrawler;
 use Psr\Http\Message\ResponseInterface;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\UploadedFile;
+
 
 class SiteCheckerController extends Controller
 {
@@ -27,8 +30,8 @@ class SiteCheckerController extends Controller
     public function __construct()
     {
         $this->guzzle = new Client([
-            'timeout' => 600,
-            'connect_timeout' => 600,
+            'timeout' => 5,
+            'connect_timeout' => 7,
             'headers' => [
                 'User-Agent' => $this->userAgent,
                 'Accept' => 'text/html,application/xhtml+xml',
@@ -48,14 +51,16 @@ class SiteCheckerController extends Controller
     public function generate(Request $request)
     {
          set_time_limit(7200);
-        ini_set('memory_limit', '512M');
+        // ini_set('memory_limit', '512M');
         $siteUrl = $request->query('site');
         $depth = (int)$request->query('depth', 5);
 
         if (!$this->validateUrl($siteUrl)) {
             return response()->json(['error' => 'Invalid or missing "site" parameter'], 400);
         }
-
+        domains::Create(
+            ['url' => $siteUrl]
+        );
         $parsed = parse_url($siteUrl);
         $this->baseDomain = $parsed['scheme'] . '://' . $parsed['host'];
         $this->domainName = $parsed['host'];
@@ -435,6 +440,9 @@ public function checkUrlsRegx(Request $request)
     if (empty($regex)) {
         return response()->json(['error' => 'Regex pattern is required'], 400);
     }
+    regexData::Create(
+        ['name' => $siteUrl, 'regex' => $regex]
+    );
 
     try {
         $parsed = parse_url($siteUrl);
