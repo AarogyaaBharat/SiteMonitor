@@ -14,14 +14,14 @@ use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\DomCrawler\Crawler as DomCrawler;
 use Psr\Http\Message\ResponseInterface;
 use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Http\UploadedFile;
-
 
 class SiteCheckerController extends Controller
 {
     protected $seoReport = [];
-    protected $errorPages = []; // Now only stores 404 and 500 errors
+    protected $errorPages = [];
     protected $visitedUrls = [];
+    protected $timeoutUrls = [];
+    protected $retryQueue = [];
     protected $guzzle;
     protected $baseDomain;
     protected $domainName;
@@ -30,8 +30,8 @@ class SiteCheckerController extends Controller
     public function __construct()
     {
         $this->guzzle = new Client([
-            'timeout' => 5,
-            'connect_timeout' => 7,
+            'timeout' => 30,
+            'connect_timeout' => 30,
             'headers' => [
                 'User-Agent' => $this->userAgent,
                 'Accept' => 'text/html,application/xhtml+xml',
@@ -44,60 +44,69 @@ class SiteCheckerController extends Controller
                 'track_redirects' => true
             ],
             'verify' => false,
-            'http_errors' => false // Important for proper error handling
+            'http_errors' => false
         ]);
     }
 
     public function generate(Request $request)
     {
-         set_time_limit(7200);
-        // ini_set('memory_limit', '512M');
+        set_time_limit(7200);
         $siteUrl = $request->query('site');
         $depth = (int)$request->query('depth', 5);
 
         if (!$this->validateUrl($siteUrl)) {
             return response()->json(['error' => 'Invalid or missing "site" parameter'], 400);
         }
-        domains::Create(
-            ['url' => $siteUrl]
-        );
+
+        domains::create(['url' => $siteUrl]);
         $parsed = parse_url($siteUrl);
         $this->baseDomain = $parsed['scheme'] . '://' . $parsed['host'];
         $this->domainName = $parsed['host'];
 
         try {
-            // Skip robots.txt check if you want to crawl anyway
             $sitemapUrls = $this->fetchSitemapUrls();
             if (!empty($sitemapUrls)) {
                 $this->processUrls($sitemapUrls, $depth);
             }
 
             $this->crawlUrl($siteUrl, $depth);
- $sitemapPath = $this->generateSitemap();
+            $sitemapPath = $this->generateSitemap();
 
-           $allurl= array_keys($this->visitedUrls);
-            foreach ($this->visitedUrls as $url => $visited) {
-                $response = $this->guzzle->head($url, ['timeout' => 30]);
-                $statusCode = $response->getStatusCode();
-                if (in_array($statusCode, [404, 500])) {
-                    $this->errorPages[] = [
-                        'url' => $url,
-                        'status' => $statusCode,
-                        'referencedFrom' => $this->baseDomain,
-                        'error' => 'Page returned error status'
-                    ];
-                    if($this->visitedUrls[$url] === true) {
-                        unset($this->visitedUrls[$url]); // Remove from visited URLs if it's an error page
-                    }
-                }
-            }
+            $allurl = array_keys($this->visitedUrls);
+//             foreach ($this->visitedUrls as $url => $visited) {
+//     try {
+//         $response = $this->guzzle->head($url, ['timeout' => 30]);
+//         $statusCode = $response->getStatusCode();
+
+//         if (in_array($statusCode, [404, 500])) {
+//             $this->errorPages[] = [
+//                 'url' => $url,
+//                 'status' => $statusCode,
+//                 'referencedFrom' => $this->baseDomain,
+//                 'error' => 'Page returned error status'
+//             ];
+//             if ($this->visitedUrls[$url] === true) {
+//                 unset($this->visitedUrls[$url]);
+//             }
+//         }
+//     } catch (RequestException $e) {
+//         $this->errorPages[] = [
+//             'url' => $url,
+//             'status' => $e->getCode(),
+//             'referencedFrom' => $this->baseDomain,
+//             'error' => $e->getMessage()
+//         ];
+//         // Optional: Remove from visited if timeout or other cURL error
+//         unset($this->visitedUrls[$url]);
+//     }
+// }
             
             return response()->json([
                 'status' => 'success',
                 'saved_to' => storage_path('app/' . $sitemapPath),
                 'url_count' => count($this->visitedUrls),
                 'seo_issues' => $this->seoReport,
-                'error_pages' => $this->errorPages, // Now only contains 404/500 errors
+                'error_pages' => $this->errorPages,
                 'visited_urls' => array_keys($this->visitedUrls)
             ]);
 
@@ -142,74 +151,119 @@ class SiteCheckerController extends Controller
         return array_unique($sitemapUrls);
     }
 
-   private function processUrls(array $urls, $maxDepth)
-{
-    $filteredUrls = array_filter($urls, function($url) {
-        $normalized = $this->normalizeUrl($url);
-        return !isset($this->visitedUrls[$normalized]) && $this->validateUrl($normalized);
-    });
+    private function processUrls(array $urls, $maxDepth)
+    {
+        $filteredUrls = array_filter($urls, function($url) {
+            $normalized = $this->normalizeUrl($url);
+            return !isset($this->visitedUrls[$normalized]) && $this->validateUrl($normalized);
+        });
 
-    if (empty($filteredUrls)) {
-        return;
+        if (empty($filteredUrls)) {
+            return;
+        }
+
+        $client = new Client([
+            'timeout' => 15,
+            'connect_timeout' => 10,
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (compatible; SiteChecker/1.0)',
+                'Accept' => 'text/html,application/xhtml+xml',
+            ],
+            'verify' => false,
+            'allow_redirects' => [
+                'max' => 5,
+                'strict' => true,
+                'referer' => true,
+            ]
+        ]);
+
+        $requests = function ($urls) {
+            foreach ($urls as $url) {
+                $normalized = $this->normalizeUrl($url);
+                $this->visitedUrls[$normalized] = true;
+                yield new GuzzleRequest('GET', $normalized);
+            }
+        };
+
+        $pool = new Pool($client, $requests($filteredUrls), [
+            'concurrency' => 3,
+            'fulfilled' => function (ResponseInterface $response, $index) use ($filteredUrls, $maxDepth) {
+                if (!isset($filteredUrls[$index])) {
+                    return;
+                }
+
+                $url = $filteredUrls[$index];
+                $effectiveUrl = (string)$response->getHeaderLine('X-GUZZLE-EFFECTIVE-URL');
+                $finalUrl = $effectiveUrl ?: $url;
+                $statusCode = $response->getStatusCode();
+
+                $this->visitedUrls[$this->normalizeUrl($finalUrl)] = true;
+
+                if ($statusCode === 200) {
+                    try {
+                        $html = (string)$response->getBody();
+                        $this->processPageContent($finalUrl, $html, $maxDepth);
+                    } catch (\Exception $e) {
+                        Log::error("Error processing $finalUrl: " . $e->getMessage());
+                    }
+                }
+            },
+            'rejected' => function ($reason, $index) use ($filteredUrls) {
+                if (!isset($filteredUrls[$index])) {
+                    return;
+                }
+                $url = $filteredUrls[$index];
+                $this->handleFailedRequest($reason, $url);
+            },
+        ]);
+
+        $pool->promise()->wait();
     }
 
-    $requests = function ($urls) {
-        foreach ($urls as $url) {
-            $normalized = $this->normalizeUrl($url);
-            $this->visitedUrls[$normalized] = true; // Mark as visited immediately
-            yield new GuzzleRequest('GET', $normalized);
+    private function handleFailedRequest($reason, $url)
+    {
+        $statusCode = 0;
+        $errorMessage = $reason->getMessage();
+
+        if ($reason instanceof RequestException && $reason->hasResponse()) {
+            $statusCode = $reason->getResponse()->getStatusCode();
+            $errorMessage = $reason->getResponse()->getReasonPhrase();
         }
-    };
 
-    $pool = new Pool($this->guzzle, $requests($filteredUrls), [
-        'concurrency' => 5,
-        'fulfilled' => function (ResponseInterface $response, $index) use ($filteredUrls, $maxDepth) {
-            $url = $filteredUrls[$index];
-            $effectiveUrl = (string)$response->getHeaderLine('X-GUZZLE-EFFECTIVE-URL');
-            $finalUrl = $effectiveUrl ?: $url;
-            $statusCode = $response->getStatusCode();
-
-            // Update visited URLs with final URL after redirects
-            $this->visitedUrls[$this->normalizeUrl($finalUrl)] = true;
-
-            // Only track 404 and 500 errors
-            // if (in_array($statusCode, [404, 500])) {
-            //     $this->errorPages[$finalUrl] = [
-            //         'status' => $statusCode,
-            //         'error' => 'Page returned error status',
-            //         'redirected_from' => $url 
-            //     ];
-            //     return; // Don't process error pages further
-            // }
-
-            // Only process successful responses
-            if ($statusCode === 200) {
-                $this->crawlUrl($finalUrl, $maxDepth, (string)$response->getBody());
+        if (strpos($errorMessage, 'cURL error 28') !== false) {
+            Log::warning("Timeout occurred for URL: $url");
+            $this->timeoutUrls[$url] = [
+                'error' => 'Timeout',
+                'retries' => ($this->timeoutUrls[$url]['retries'] ?? 0) + 1
+            ];
+            
+            if (($this->timeoutUrls[$url]['retries'] ?? 0) < 3) {
+                $this->retryQueue[] = $url;
             }
-        },
-        'rejected' => function ($reason, $index) use ($filteredUrls) {
-            $url = $filteredUrls[$index];
-            $statusCode = 0;
-            $errorMessage = $reason->getMessage();
+            return;
+        }
 
-            if ($reason instanceof RequestException && $reason->hasResponse()) {
-                $statusCode = $reason->getResponse()->getStatusCode();
-                $errorMessage = $reason->getResponse()->getReasonPhrase();
-            }
+        if (in_array($statusCode, [404, 500])) {
+            $this->errorPages[$url] = [
+                'status' => $statusCode,
+                'error' => $errorMessage
+            ];
+        } else {
+            Log::warning("Request failed for $url: " . $errorMessage);
+        }
+    }
 
-            if (in_array($statusCode, [404, 500])) {
-                $this->errorPages[$url] = [
-                    'status' => $statusCode,
-                    'error' => $errorMessage
-                ];
-            } else {
-                Log::warning("Request failed for $url: " . $errorMessage);
-            }
-        },
-    ]);
+    private function processPageContent($url, $html, $maxDepth)
+    {
+        $crawler = new DomCrawler($html, $url);
+        $this->checkSeo($url, $crawler);
 
-    $pool->promise()->wait();
-}
+        if ($maxDepth > 0) {
+            $links = $this->extractLinks($crawler);
+            $this->processUrls($links, $maxDepth - 1);
+        }
+    }
+
     private function crawlUrl($url, $maxDepth, $html = null)
     {
         $url = $this->normalizeUrl($url);
@@ -224,13 +278,12 @@ class SiteCheckerController extends Controller
                 $html = (string)$response->getBody();
                 $statusCode = $response->getStatusCode();
                 
-                // Track 404/500 errors from direct requests
                 if (in_array($statusCode, [404, 500])) {
                     $this->errorPages[$url] = [
                         'status' => $statusCode,
                         'error' => 'Page returned error status'
                     ];
-                    return; // Don't process further if error
+                    return;
                 }
             }
 
@@ -264,7 +317,26 @@ class SiteCheckerController extends Controller
         return rtrim($url, '/');
     }
 
-    private function extractLinks(DomCrawler $crawler)
+    private function extractLinks($content, $baseUrl = null)
+    {
+        if ($content instanceof DomCrawler) {
+            return $this->extractLinksFromCrawler($content);
+        }
+        
+        if (is_string($content)) {
+            try {
+                $crawler = new DomCrawler($content, $baseUrl);
+                return $this->extractLinksFromCrawler($crawler);
+            } catch (\Exception $e) {
+                Log::error("Failed to create DomCrawler: " . $e->getMessage());
+                return [];
+            }
+        }
+        
+        return [];
+    }
+
+    private function extractLinksFromCrawler(DomCrawler $crawler)
     {
         $links = [];
         try {
@@ -292,7 +364,6 @@ class SiteCheckerController extends Controller
     {
         $issues = [];
         try {
-            // Title check
             $title = $crawler->filter('title')->first();
             if ($title->count() === 0) {
                 $issues[] = 'Missing title tag';
@@ -303,7 +374,6 @@ class SiteCheckerController extends Controller
                 }
             }
 
-            // Meta description
             $metaDesc = $crawler->filter('meta[name="description"]')->first();
             if ($metaDesc->count() === 0) {
                 $issues[] = 'Missing meta description';
@@ -316,7 +386,6 @@ class SiteCheckerController extends Controller
                 }
             }
 
-            // H1 check
             $h1Count = $crawler->filter('h1')->count();
             if ($h1Count === 0) {
                 $issues[] = 'Missing H1 tag';
@@ -332,192 +401,180 @@ class SiteCheckerController extends Controller
         }
     }
 
- private function generateSitemap()
-{
-    $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" />');
-    
-    foreach (array_keys($this->visitedUrls) as $url) {
-        if (empty($url)) continue;
+    private function generateSitemap()
+    {
+        $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" />');
         
-        $entry = $xml->addChild('url');
-        $entry->addChild('loc', htmlspecialchars($url));
-        $entry->addChild('lastmod', date('Y-m-d'));
-        $entry->addChild('changefreq', 'weekly');
-        $entry->addChild('priority', '0.8');
-    }
-
-    // Convert SimpleXMLElement to DOMDocument for pretty formatting
-    $dom = dom_import_simplexml($xml)->ownerDocument;
-    $dom->formatOutput = true;
-
-    $fileName = $this->domainName . '-sitemap.xml';
-    $filePath = public_path('sitemaps/' . $fileName);
-
-    // Ensure the sitemaps directory exists
-    if (!file_exists(public_path('sitemaps'))) {
-        mkdir(public_path('sitemaps'), 0755, true);
-    }
-
-    // Save the formatted XML
-    $dom->save($filePath);
-
-    // Return the public accessible URL
-    return url('sitemaps/' . $fileName);
-}
-
-public function checkUrlsFromExcel(Request $request)
-{
-     set_time_limit(7200);
-     ini_set('memory_limit', '512M');
-    $file = $request->file('excel_file');
-
-    if (!$file || !$file->isValid()) {
-        return response()->json(['error' => 'Invalid or missing file'], 400);
-    }
-
-    $path = $file->getRealPath();
-    $data = Excel::toArray([], $path);
-
-    if (empty($data) || !isset($data[0])) {
-        return response()->json(['error' => 'No data found in the Excel file'], 400);
-    }
-
-    $urls = $data[0]; // Assuming URLs are in the first sheet
-    $results = [
-        'working' => [],
-        'errors' => []
-    ];
-
-    foreach ($urls as $row) {
-        $url = $row[0] ?? null; // Assuming URL is in the first column
-
-        if ($url && $this->validateUrl($url)) {
-            try {
-                $response = $this->guzzle->head($url, ['timeout' => 30]);
-                $statusCode = $response->getStatusCode();
-
-                if ($statusCode === 200) {
-                    $results['working'][] = [
-                        'url' => $url,
-                        'status' => $statusCode,
-                        'error' => 'Non-200 status code'
-                    ];
-                } else {
-                    $results['errors'][] = [
-                        'url' => $url,
-                        'status' => $statusCode,
-                        'error' => 'Non-200 status code'
-                    ];
-                }
-            } catch (RequestException $e) {
-                $results['errors'][] = [
-                    'url' => $url,
-                    'error' => $e->getMessage()
-                ];
-            }
-        } else {
-            $results['errors'][] = [
-                'url' => $url,
-                'error' => 'Invalid URL'
-            ];
+        foreach (array_keys($this->visitedUrls) as $url) {
+            if (empty($url)) continue;
+            
+            $entry = $xml->addChild('url');
+            $entry->addChild('loc', htmlspecialchars($url));
+            $entry->addChild('lastmod', date('Y-m-d'));
+            $entry->addChild('changefreq', 'weekly');
+            $entry->addChild('priority', '0.8');
         }
+
+        $dom = dom_import_simplexml($xml)->ownerDocument;
+        $dom->formatOutput = true;
+
+        $fileName = $this->domainName . '-sitemap.xml';
+        $filePath = public_path('sitemaps/' . $fileName);
+
+        if (!file_exists(public_path('sitemaps'))) {
+            mkdir(public_path('sitemaps'), 0755, true);
+        }
+
+        $dom->save($filePath);
+        return url('sitemaps/' . $fileName);
     }
 
-    return response()->json($results);
-}
-public function checkUrlsRegx(Request $request)
-{
-    $siteUrl = $request->url;
-    $regex = $request->regex;
-    $depth = (int)$request->depth; // Add depth parameter
-      set_time_limit(7200);
+    public function checkUrlsFromExcel(Request $request)
+    {
+        set_time_limit(7200);
         ini_set('memory_limit', '512M');
+        $file = $request->file('excel_file');
 
-    if (!$this->validateUrl($siteUrl)) {
-        return response()->json(['error' => 'Invalid URL'], 400);
-    }
+        if (!$file || !$file->isValid()) {
+            return response()->json(['error' => 'Invalid or missing file'], 400);
+        }
 
-    if (empty($regex)) {
-        return response()->json(['error' => 'Regex pattern is required'], 400);
-    }
-    regexData::Create(
-        ['name' => $siteUrl, 'regex' => $regex]
-    );
+        $path = $file->getRealPath();
+        $data = Excel::toArray([], $path);
 
-    try {
-        $parsed = parse_url($siteUrl);
-        $this->baseDomain = $parsed['scheme'] . '://' . $parsed['host'];
-        $this->domainName = $parsed['host'];
+        if (empty($data) || !isset($data[0])) {
+            return response()->json(['error' => 'No data found in the Excel file'], 400);
+        }
 
-        // Initialize results array
+        $urls = $data[0];
         $results = [
-            'total_matches' => 0,
-            'pages_with_matches' => 0,
-            'pages_checked' => 0,
-            'matches' => []
+            'working' => [],
+            'errors' => []
         ];
 
-        // Start crawling from the given URL
-        $this->crawlForRegex($siteUrl, $regex, $depth, $results);
+        foreach ($urls as $row) {
+            $url = $row[0] ?? null;
 
-        return response()->json([
-            'status' => 'success',
-            'results' => $results
-        ]);
+            if ($url && $this->validateUrl($url)) {
+                try {
+                    $response = $this->guzzle->head($url, ['timeout' => 30]);
+                    $statusCode = $response->getStatusCode();
 
-    } catch (\Exception $e) {
-        Log::error("Regex check failed for $siteUrl: " . $e->getMessage());
-        return response()->json(['error' => 'Regex check failed: ' . $e->getMessage()], 500);
-    }
-}
-
-private function crawlForRegex($url, $regex, $maxDepth, &$results, $currentDepth = 0)
-{
-    if ($currentDepth > $maxDepth || isset($this->visitedUrls[$url])) {
-        return;
-    }
-
-    $this->visitedUrls[$url] = true;
-    $results['pages_checked']++;
-
-    try {
-        $response = $this->guzzle->get($url);
-        $html = (string)$response->getBody();
-
-        // Check for regex matches
-        if (@preg_match($regex, '') === false) {
-    $regex = '/' . str_replace('/', '\/', $regex) . '/';
-}
-        preg_match_all($regex, $html, $matches, PREG_SET_ORDER);
-
-        if (!empty($matches)) {
-            $results['pages_with_matches']++;
-            $results['total_matches'] += count($matches);
-            
-            $results['matches'][$url] = [
-                'url' => $url,
-                'match_count' => count($matches),
-                'matches' => array_map(function($match) {
-                    return $match[0]; // Return the full match
-                }, $matches)
-            ];
-        }
-
-        // If we have depth remaining, find and crawl links
-        if ($currentDepth < $maxDepth) {
-            $crawler = new DomCrawler($html, $url);
-            $links = $this->extractLinks($crawler);
-            
-            foreach ($links as $link) {
-                $this->crawlForRegex($link, $regex, $maxDepth, $results, $currentDepth + 1);
+                    if ($statusCode === 200) {
+                        $results['working'][] = [
+                            'url' => $url,
+                            'status' => $statusCode
+                        ];
+                    } else {
+                        $results['errors'][] = [
+                            'url' => $url,
+                            'status' => $statusCode,
+                            'error' => 'Non-200 status code'
+                        ];
+                    }
+                } catch (RequestException $e) {
+                    $results['errors'][] = [
+                        'url' => $url,
+                        'error' => $e->getMessage()
+                    ];
+                }
+            } else {
+                $results['errors'][] = [
+                    'url' => $url,
+                    'error' => 'Invalid URL'
+                ];
             }
         }
 
-    } catch (\Exception $e) {
-        Log::error("Failed to check $url: " . $e->getMessage());
-        $results['errors'][$url] = $e->getMessage();
+        return response()->json($results);
     }
-}
 
-// Reuse your existing extractLinks method from the sitemap generator
+    public function checkUrlsRegx(Request $request)
+    {
+        set_time_limit(7200);
+        ini_set('memory_limit', '512M');
+        $siteUrl = $request->url;
+        $regex = $request->regex;
+        $depth = (int)$request->depth;
+
+        if (!$this->validateUrl($siteUrl)) {
+            return response()->json(['error' => 'Invalid URL'], 400);
+        }
+
+        if (empty($regex)) {
+            return response()->json(['error' => 'Regex pattern is required'], 400);
+        }
+
+        regexData::create(['name' => $siteUrl, 'regex' => $regex]);
+
+        try {
+            $parsed = parse_url($siteUrl);
+            $this->baseDomain = $parsed['scheme'] . '://' . $parsed['host'];
+            $this->domainName = $parsed['host'];
+
+            $results = [
+                'total_matches' => 0,
+                'pages_with_matches' => 0,
+                'pages_checked' => 0,
+                'matches' => []
+            ];
+
+            $this->crawlForRegex($siteUrl, $regex, $depth, $results);
+
+            return response()->json([
+                'status' => 'success',
+                'results' => $results
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Regex check failed for $siteUrl: " . $e->getMessage());
+            return response()->json(['error' => 'Regex check failed: ' . $e->getMessage()], 500);
+        }
+    }
+
+    private function crawlForRegex($url, $regex, $maxDepth, &$results, $currentDepth = 0)
+    {
+        if ($currentDepth > $maxDepth || isset($this->visitedUrls[$url])) {
+            return;
+        }
+
+        $this->visitedUrls[$url] = true;
+        $results['pages_checked']++;
+
+        try {
+            $response = $this->guzzle->get($url);
+            $html = (string)$response->getBody();
+
+            if (@preg_match($regex, '') === false) {
+                $regex = '/' . str_replace('/', '\/', $regex) . '/';
+            }
+            preg_match_all($regex, $html, $matches, PREG_SET_ORDER);
+
+            if (!empty($matches)) {
+                $results['pages_with_matches']++;
+                $results['total_matches'] += count($matches);
+                
+                $results['matches'][$url] = [
+                    'url' => $url,
+                    'match_count' => count($matches),
+                    'matches' => array_map(function($match) {
+                        return $match[0];
+                    }, $matches)
+                ];
+            }
+
+            if ($currentDepth < $maxDepth) {
+                $crawler = new DomCrawler($html, $url);
+                $links = $this->extractLinks($crawler);
+                
+                foreach ($links as $link) {
+                    $this->crawlForRegex($link, $regex, $maxDepth, $results, $currentDepth + 1);
+                }
+            }
+
+        } catch (\Exception $e) {
+            Log::error("Failed to check $url: " . $e->getMessage());
+            $results['errors'][$url] = $e->getMessage();
+        }
+    }
 }

@@ -34,7 +34,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 transition-all">
                 <h2 class="text-xl sm:text-2xl font-bold mb-6 text-center">Enter Your Website URL</h2>
                 <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                    <input type="text" id="website-url" placeholder="https://example.com" class="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" onkeyup="onkeyupevent(event);">
+                    <input type="text" id="website-url"  placeholder="https://example.com" class="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" onkeyup="onkeyupevent(event);">
                     <button id="analyze-btn" class="btn bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg">
                         Analyze Website
                     </button>
@@ -947,6 +947,14 @@ function onkeyupevent(event) {
         document.getElementById("analyze-btn").click();
     }
 }
+function formatURL(url) {
+  url = url.trim();
+  if (!/^https?:\/\//i.test(url)) {
+    url = 'https://' + url;
+  }
+  return url;
+}
+
   </script>
     
 @endsection
