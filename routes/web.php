@@ -19,3 +19,4 @@ Route::get('/check-page-speed',function () {
     return view('Pagespeedcheck');
 })->name('check-page-speed');
 Route::get('/check-backlinks', [BacklinkCheckController::class, 'check']);
+Route::post('/upload-csv-regex',[SiteCheckerController::class, 'checkExcelUrlsWithRegex'])->name('upload-csv-regex');

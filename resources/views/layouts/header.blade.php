@@ -1819,39 +1819,7 @@
 
 <body class="light bg-[var(--bg)] text-[var(--text)]">
     <!-- Upload Modal -->
-    <div id="uploadPopup" class="fixed inset-0 bg-[rgba(0,0,0,0.6)] flex items-center justify-center z-50 fade-in"
-        style="display: none;">
-        <div class="bg-[var(--bg)] text-[var(--text)] p-6 rounded-2xl w-full max-w-md shadow-xl relative">
-            <!-- Close button -->
-            <button onclick="closePopup()"
-                class="absolute top-3 right-3 text-xl font-bold text-[var(--text)] hover:text-[var(--accent)] transition">&times;</button>
-
-            <!-- Heading -->
-            <h2 class="text-lg font-semibold mb-4 text-center">Upload CSV or Excel File</h2>
-
-            <!-- Drop Zone -->
-            <div id="dropArea"
-                class="border-2 border-dashed border-[var(--primary)] rounded-xl p-6 text-center cursor-pointer transition"
-                ondragover="event.preventDefault()" ondrop="handleDrop(event)">
-                <p class="mb-2">Drag and drop your file here</p>
-                <p class="text-sm text-[var(--text)] opacity-70">(.csv, .xls, .xlsx only)</p>
-                <p id="fileName" class="mt-2 text-sm font-medium text-[var(--accent)]"></p>
-            </div>
-
-            <!-- Browse Button -->
-            <div class="text-center mt-5">
-                <form id="upload-excel-form" action="{{ url('/') }}/check-urls-from-excel" method="POST"
-                    enctype="multipart/form-data" class="flex flex-col items-center space-y-4">
-                    @csrf
-                    <input id="fileInput" name="excel_file" type="file" accept=".csv,.xls,.xlsx"
-                        onchange="handleFile(this.files[0])" class="hidden" />
-                    <button id="fileBtn" type="button"
-                        class="btn px-4 py-2 rounded-xl bg-[var(--secondary)] text-white" onclick="triggerFile()">Browse
-                        File</button>
-                </form>
-            </div>
-        </div>
-    </div>
+   
     <nav class="border-b border-gray-200 dark:border-gray-700 px-4 py-3 sticky top-0 z-50 bg-[var(--bg)]">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-2">

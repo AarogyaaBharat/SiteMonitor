@@ -14,6 +14,7 @@ use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\DomCrawler\Crawler as DomCrawler;
 use Psr\Http\Message\ResponseInterface;
 use Maatwebsite\Excel\Facades\Excel;
+use Exception;
 
 class SiteCheckerController extends Controller
 {
@@ -30,8 +31,8 @@ class SiteCheckerController extends Controller
     public function __construct()
     {
         $this->guzzle = new Client([
-            'timeout' => 30,
-            'connect_timeout' => 30,
+            'timeout' => 20,
+            'connect_timeout' => 20,
             'headers' => [
                 'User-Agent' => $this->userAgent,
                 'Accept' => 'text/html,application/xhtml+xml',
@@ -163,8 +164,8 @@ class SiteCheckerController extends Controller
         }
 
         $client = new Client([
-            'timeout' => 15,
-            'connect_timeout' => 10,
+            'timeout' => 7,
+            'connect_timeout' => 3,
             'headers' => [
                 'User-Agent' => 'Mozilla/5.0 (compatible; SiteChecker/1.0)',
                 'Accept' => 'text/html,application/xhtml+xml',
@@ -458,6 +459,7 @@ class SiteCheckerController extends Controller
             if ($url && $this->validateUrl($url)) {
                 try {
                     $response = $this->guzzle->head($url, ['timeout' => 30]);
+                    Log::info("Checking URL: $url");
                     $statusCode = $response->getStatusCode();
 
                     if ($statusCode === 200) {
@@ -577,4 +579,153 @@ class SiteCheckerController extends Controller
             $results['errors'][$url] = $e->getMessage();
         }
     }
+ public function checkExcelUrlsWithRegex(Request $request)
+{
+    // $request->validate([
+    //     'pattern' => 'required|string',
+    //     'excel_file' => 'required|file|mimes:xlsx,xls,csv',
+    //     'url_column' => 'sometimes|string|default:url',
+    //     'concurrency' => 'sometimes|integer|min:1|max:20|default:5'
+    // ]);
+
+    set_time_limit(3600);
+    ini_set('memory_limit', '512M');
+
+    try {
+        // Store the regex pattern
+        RegexData::create([
+            'name' => 'Excel URL Check',
+            'regex' => $request->pattern
+        ]);
+
+        // Process Excel file
+        $data = Excel::toArray([], $request->file('excel_file')->getRealPath());
+        
+        if (empty($data)) {
+            return response()->json(['error' => 'Excel file is empty'], 400);
+        }
+
+        $headers = array_shift($data[0]);
+        $urlColumn = array_search('URL', $headers);
+        
+        if ($urlColumn === false) {
+            return response()->json(['error' => 'URL column not found'], 400);
+        }
+
+        $urls = array_column($data[0], $urlColumn);
+        $urls = array_filter($urls, [$this, 'validateUrl']);
+        $urls = array_unique($urls);
+
+        if (empty($urls)) {
+            return response()->json(['error' => 'No valid URLs found'], 400);
+        }
+
+        // Prepare regex
+        $regex = $this->prepareRegex($request->pattern);
+        $results = $this->processUrlsWithRegex($urls, $regex, $request->concurrency);
+
+        // Format matches for frontend
+        $formattedMatches = [];
+        foreach ($results['matches'] as $url => $match) {
+            $formattedMatches[$url] = [
+                'match_count' => $match['match_count'],
+                'matches' => $match['sample_matches'] // Already limited to 3 samples
+            ];
+        }
+
+        // Prepare the response in the format expected by your frontend
+        return response()->json([
+            'status' => 'success',
+            'results' => [
+                'pages_with_matches' => count($results['matches']),
+                'total_matches' => array_sum(array_column($results['matches'], 'match_count')),
+                'matches' => $formattedMatches,
+                'errors' => $results['errors'],
+                'stats' => [
+                    'total_urls' => count($urls),
+                    'matched_urls' => count($results['matches']),
+                    'match_percentage' => round(count($results['matches']) / max(1, count($urls)) * 100, 2)
+                ]
+            ],
+            'pattern' => $request->pattern,
+            'website_url' => $request->website_url ?? null // Optional if you want to track source URL
+        ]);
+
+    } catch (Exception $e) {
+        Log::error("Excel URL regex check failed: " . $e->getMessage());
+        return response()->json([
+            'error' => $e->getMessage(),
+            'trace' => config('app.debug') ? $e->getTraceAsString() : null
+        ], 500);
+    }
+}
+
+private function processUrlsWithRegex($urls, $regex, $concurrency = 5)
+{
+    $results = [
+        'matches' => [],
+        'errors' => []
+    ];
+
+    $requests = function ($urls) {
+        foreach ($urls as $url) {
+            yield new GuzzleRequest('GET', $url);
+        }
+    };
+
+    $pool = new Pool($this->guzzle, $requests($urls), [
+        'concurrency' => $concurrency,
+        'fulfilled' => function ($response, $index) use ($urls, $regex, &$results) {
+            $url = $urls[$index];
+            try {
+                $content = (string)$response->getBody();
+                if (preg_match_all($regex, $content, $matches, PREG_SET_ORDER)) {
+                    $results['matches'][$url] = [
+                        'match_count' => count($matches),
+                        'sample_matches' => array_slice(array_map(function($m) {
+                            // Escape HTML for safety before sending to frontend
+                            return htmlspecialchars(mb_substr($m[0], 0, 200), ENT_QUOTES, 'UTF-8');
+                        }, $matches), 0, 3) // Limit to 3 sample matches
+                    ];
+                }
+            } catch (Exception $e) {
+                $results['errors'][$url] = $e->getMessage();
+            }
+        },
+        'rejected' => function ($reason, $index) use ($urls, &$results) {
+            $url = $urls[$index] ?? 'unknown';
+            $results['errors'][$url] = $reason->getMessage();
+        },
+    ]);
+
+    $pool->promise()->wait();
+    return $results;
+}
+
+    /**
+     * Validate and prepare regex pattern
+     */
+    private function prepareRegex($pattern)
+    {
+        if (@preg_match($pattern, '') === false) {
+            // Try to auto-correct by adding delimiters if missing
+            if (!preg_match('/^\/.*\/[imsxADSUXJu]*$/', $pattern)) {
+                $pattern = '/' . str_replace('/', '\/', $pattern) . '/';
+            }
+            
+            if (@preg_match($pattern, '') === false) {
+                throw new Exception("Invalid regex pattern: " . preg_last_error_msg());
+            }
+        }
+        return $pattern;
+    }
+
+    /**
+     * Validate URL format
+     */
+    // private function validateUrl($url)
+    // {
+    //     return filter_var($url, FILTER_VALIDATE_URL) && 
+    //            in_array(parse_url($url, PHP_URL_SCHEME), ['http', 'https']);
+    // }
 }
